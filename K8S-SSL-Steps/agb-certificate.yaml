@@ -1,0 +1,13 @@
+
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: agbdomain-com-certificate
+spec:
+  secretName: digitalocean-dns
+  issuerRef:
+    name: letsencrypt-prod
+  commonName: cloudeira.com
+  dnsNames:
+  - cloudeira.com
+  - "*.cloudeira.com"

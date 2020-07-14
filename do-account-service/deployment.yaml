@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-dep
+  labels:
+    app: account-app
+spec:
+  selector:
+    matchLabels:
+      app: account-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: account-app
+    spec:
+      containers:
+        - name: account-dep
+          image: docker.io/mrudul03/do-account-service:v02
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              port: 8090
+              path: /actuator/health
+            initialDelaySeconds: 30
+          livenessProbe:
+            httpGet:
+              port: 8090
+              path: /actuator/health
+            initialDelaySeconds: 30
+          ports:
+            - containerPort: 8090
+          env:
+            - name: message
+              valueFrom:
+                configMapKeyRef:
+                  name: account-config
+                  key: message
+                  
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: account-config
+data:
+  message: Hello World from DO Account!                  

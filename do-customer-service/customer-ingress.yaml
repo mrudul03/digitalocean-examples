@@ -1,0 +1,15 @@
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: customer-ingress
+  namespace: customer
+spec:
+  rules:
+  - host: customer.cloudeira.com
+    http:
+      paths:
+      - backend:
+          serviceName: customer-svc
+          servicePort: 80

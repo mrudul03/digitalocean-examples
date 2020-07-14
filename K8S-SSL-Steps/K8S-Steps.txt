@@ -1,0 +1,140 @@
+ DemoSteps
+
+ ########### Kubernetes Cluster and connect from laptop
+1. Create a K8S cluster on DigitalOcean
+
+2. Get an Authentication Token or Certificate
+
+Generate Using doctl (Recommended)
+The below command sets the kubernetes current context
+doctl kubernetes cluster kubeconfig save agb-api-cluster
+
+Notice: adding cluster credentials to kubeconfig file found in "/Users/Mrudul/.kube/config"
+Notice: setting current-context to do-nyc1-agb-api-cluster
+
+Check the current context
+kubectl config current-context
+
+List all the contexts
+kubectl config get-contexts
+
+Delete context
+kubectl config delete-context do-nyc1-mobile-app-dev-cluster
+
+The default context is specified with an asterisk under “CURRENT”. To set the default context to a different one, use:
+kubectl config use-context <context-name>
+
+########### Install Ambassador API Gateway
+Deploy Ambassador Gateway
+https://www.getambassador.io/user-guide/install-ambassador-oss/#from-sidebar
+
+1. Deploy Ambassador
+check if Kubernetes has RBAC enabled. By default DigitalOcean K8S clusters are RBAC enabled.
+
+If RBAC enabled
+kubectl apply -f https://getambassador.io/yaml/ambassador/ambassador-rbac.yaml
+
+2. Defining the Ambassador Service
+Deploy this service with kubectl:
+kubectl apply -f ambassador-service.yaml
+
+########### Install Microservice
+Install HelloWorld Service
+
+kubectl apply -f deployment.yaml
+kubectl apply -f do-amb-helloworld-service.yaml
+
+Update the A Record with public IP of ambassador LoadBalancer
+https://ap.www.namecheap.com/?_ga=2.265107334.801942092.1578722948-340317218.1577524134
+
+Test with - 
+curl http://helloworld.cloudeira.com/api/helloservice/mrudul123
+#########################################################
+
+
+Install cert-manager
+kubectl create ns cert-manager
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.11.1/cert-manager-no-webhook.yaml
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+customresourcedefinition.apiextensions.k8s.io/challenges.acme.cert-manager.io created
+customresourcedefinition.apiextensions.k8s.io/orders.acme.cert-manager.io created
+customresourcedefinition.apiextensions.k8s.io/certificaterequests.cert-manager.io created
+customresourcedefinition.apiextensions.k8s.io/certificates.cert-manager.io created
+customresourcedefinition.apiextensions.k8s.io/clusterissuers.cert-manager.io created
+customresourcedefinition.apiextensions.k8s.io/issuers.cert-manager.io created
+Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+namespace/cert-manager configured
+serviceaccount/cert-manager-cainjector created
+serviceaccount/cert-manager created
+clusterrole.rbac.authorization.k8s.io/cert-manager-cainjector created
+clusterrolebinding.rbac.authorization.k8s.io/cert-manager-cainjector created
+role.rbac.authorization.k8s.io/cert-manager-cainjector:leaderelection created
+rolebinding.rbac.authorization.k8s.io/cert-manager-cainjector:leaderelection created
+role.rbac.authorization.k8s.io/cert-manager:leaderelection created
+rolebinding.rbac.authorization.k8s.io/cert-manager:leaderelection created
+clusterrole.rbac.authorization.k8s.io/cert-manager-controller-issuers created
+clusterrole.rbac.authorization.k8s.io/cert-manager-controller-clusterissuers created
+clusterrole.rbac.authorization.k8s.io/cert-manager-controller-certificates created
+clusterrole.rbac.authorization.k8s.io/cert-manager-controller-orders created
+clusterrole.rbac.authorization.k8s.io/cert-manager-controller-challenges created
+clusterrole.rbac.authorization.k8s.io/cert-manager-controller-ingress-shim created
+clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-issuers created
+clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-clusterissuers created
+clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-certificates created
+clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-orders created
+clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-challenges created
+clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-ingress-shim created
+clusterrole.rbac.authorization.k8s.io/cert-manager-view created
+clusterrole.rbac.authorization.k8s.io/cert-manager-edit created
+service/cert-manager created
+deployment.apps/cert-manager-cainjector created
+deployment.apps/cert-manager created
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create Secret named digitalocean-dns and have a sub-key access-token with the token in it.
+DO token 
+digitalocean-dns
+4614cbc39fccc1329c05aaba7203985155ceeb64117a30c88f699383cbdcaa6a
+
+
+https://telescope.ac/battlefield/dns-01-digital-ocean
+Create Issuer
+kubectl apply -f agb-issuer.yaml
+
+Create Secret
+Get DigitalOcean token
+Just go to https://cloud.digitalocean.com/account/api/tokens and generate a new personal access token. DigitalOcean will ask for a name, and then print you the new token. You have to transform it to base64 and then paste to the snippet above.
+
+This is how it can be done on Mac/Linux:
+> echo -n '<TOKEN>' | base64
+echo -n '4614cbc39fccc1329c05aaba7203985155ceeb64117a30c88f699383cbdcaa6a' | base64
+
+Add the base64 encoded token to secret
+kubectl apply -f agb-secret.yaml
+
+Create Certificate
+kubectl apply -f agb-certificate.yaml
+Verify Certificate issuance
+kubectl describe certificates agbdomain-com-certificate
+kubectl get orders
+
+Update Ambassador service
+kubectl apply -f ambassador-service-tls.yaml
+
+TXT record value
+hJK8gsW9aSDsutBhdxPsSdGHvRHPxcwJzLVvcX7-XSs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

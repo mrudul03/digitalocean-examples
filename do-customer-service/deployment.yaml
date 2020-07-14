@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-dep
+  labels:
+    app: customer-app
+spec:
+  selector:
+    matchLabels:
+      app: customer-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: customer-app
+    spec:
+      containers:
+        - name: customer-dep
+          image: docker.io/mrudul03/do-customer-service:v03
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health
+            initialDelaySeconds: 30
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health
+            initialDelaySeconds: 30
+          ports:
+            - containerPort: 8080
+          env:
+            - name: message
+              valueFrom:
+                configMapKeyRef:
+                  name: customer-config
+                  key: message
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dodb-secret
+                  key: dbusername
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dodb-secret
+                  key: dbpassword
+                  
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: customer-config
+data:
+  message: Hello from Cutomer Service!                  

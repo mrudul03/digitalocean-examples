@@ -1,0 +1,106 @@
+
+########### Kubernetes Cluster and connect from laptop
+1. Create a K8S cluster on DigitalOcean
+
+2. Get an Authentication Token or Certificate
+
+Generate Using doctl (Recommended)
+The below command sets the kubernetes current context
+doctl kubernetes cluster kubeconfig save agb-api-cluster
+
+Notice: adding cluster credentials to kubeconfig file found in "/Users/Mrudul/.kube/config"
+Notice: setting current-context to do-nyc1-agb-api-cluster
+
+Check the current context
+kubectl config current-context
+
+List all the contexts
+kubectl config get-contexts
+
+Delete context
+kubectl config delete-context do-nyc1-mobile-app-dev-cluster
+
+The default context is specified with an asterisk under “CURRENT”. To set the default context to a different one, use:
+kubectl config use-context <context-name>
+
+########### Install Ambassador API Gateway
+Deploy Ambassador Gateway
+https://www.getambassador.io/user-guide/getting-started/
+
+1. Deploy Ambassador
+check if Kubernetes has RBAC enabled. By default DigitalOcean K8S clusters are RBAC enabled.
+
+If RBAC enabled
+kubectl apply -f https://getambassador.io/yaml/ambassador/ambassador-rbac.yaml
+
+2. Defining the Ambassador Service
+Deploy this service with kubectl:
+kubectl apply -f ambassador-service.yaml
+
+########### Install Microservice
+Install HelloWorld Service
+
+kubectl apply -f deployment.yaml
+kubectl apply -f do-amb-helloworld-service.yaml
+
+Update the A Record with public IP of ambassador LoadBalancer
+https://ap.www.namecheap.com/?_ga=2.265107334.801942092.1578722948-340317218.1577524134
+
+Test with - 
+curl http://helloworld.cloudeira.com/api/helloservice/mrudul123
+
+########### Install SSL Certificate
+https://www.getambassador.io/user-guide/tls-termination/
+
+Install cert-manager
+kubectl create ns cert-manager
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.11.1/cert-manager-no-webhook.yaml
+
+Issuing Certificates
+ClusterIssuer.yaml
+kubectl apply -f ClusterIssuer.yaml
+clusterissuer.cert-manager.io/letsencrypt-prod created
+
+kubectl apply -f Certificate.yaml
+certificate.cert-manager.io/ambassador-certs created
+
+kubectl describe certificates helloworld-certificate
+
+kubectl get pods -n cert-manager
+
+kubectl logs -n cert-manager cert-manager-5b74c87977-7s9lq | grep acme-http-domain
+
+kubectl apply -f acme-challenge-mapping.yaml
+
+
+curl https://helloworld.cloudeira.com/api/helloservice/mrudul123
+curl https://167.172.14.53/api/helloservice/mrudul123
+
+------------------------------------
+########### Install SSL Certificate
+https://www.getambassador.io/user-guide/tls-termination/
+
+Install cert-manager
+kubectl create ns cert-manager
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.11.1/cert-manager-no-webhook.yaml
+
+kubectl apply -f cluster-issuer.yaml
+clusterissuer.cert-manager.io/letsencrypt-prod created
+
+kubectl apply -f certificate.yaml
+certificate.cert-manager.io/ambassador-certs created
+
+
+kubectl logs -n cert-manager cert-manager-5b74c87977-b5wnd | grep acme-http-domain
+
+
+########### Install SSL Certificate
+
+
+
+
+
+
+
+
+

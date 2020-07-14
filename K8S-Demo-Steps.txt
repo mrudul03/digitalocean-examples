@@ -1,0 +1,52 @@
+
+Start by creating the “mandatory” resources for Nginx Ingress in your cluster.
+https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
+
+####################### K8S demo Steps
+https://minikube.sigs.k8s.io/docs/overview/
+https://docs.bitnami.com/kubernetes/get-started-kubernetes/
+
+brew install minikube
+
+minikube start --vm-driver=hyperkit
+minikube config set vm-driver hyperkit
+
+minikube dashboard --url
+http://127.0.0.1:55091/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
+
+minikube kubectl cluster-info
+minikube kubectl get nodes
+minikube kubectl describe node
+
+Stop your local cluster:
+minikube stop
+
+Delete your local cluster:
+minikube delete
+
+Delete all local clusters and profiles
+minikube delete --all
+
+~~~~~~~~~~~~~~~
+####### Intsall Helm and Tiller
+
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > install-helm.sh
+chmod u+x install-helm.sh
+./install-helm.sh
+
+kubectl -n kube-system create serviceaccount tiller
+kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+helm init --service-account tiller
+kubectl get pods --namespace kube-system
+
+~~~~~~~~~~~~~~~~~~
+doctl auth init
+
+enter personal token
+
+doctl kubernetes cluster kubeconfig save do-demo-cluster
+
+doctl kubernetes cluster list
+
+https://www.digitalocean.com/docs/networking/dns/how-to/manage-records/
+

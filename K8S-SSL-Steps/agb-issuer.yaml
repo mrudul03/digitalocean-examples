@@ -1,0 +1,25 @@
+
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: letsencrypt-prod
+  namespace: default
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: mrudul.palvankar@gmail.com
+
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-prod
+
+    # ACME DNS-01 provider configurations
+    solvers:
+    # An empty 'selector' means that this solver matches all domains
+    - selector: {}
+      dns01:
+        digitalocean:
+          tokenSecretRef:
+            name: digitalocean-dns
+            key: access-token
+

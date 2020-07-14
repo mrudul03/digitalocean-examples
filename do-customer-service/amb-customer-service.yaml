@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer-svc
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v1
+      kind: Mapping
+      name: customer-service_mapping
+      prefix: /
+      service: customer-svc
+      host_rewrite: customer-svc
+  labels:
+    app: customer-app
+spec:
+  selector:
+    app: customer-app
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+      protocol: TCP
+

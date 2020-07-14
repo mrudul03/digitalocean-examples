@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-dep
+  labels:
+    app: helloworld-app
+spec:
+  selector:
+    matchLabels:
+      app: helloworld-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: helloworld-app
+    spec:
+      containers:
+        - name: helloworld-dep
+          image: docker.io/mrudul03/do-helloworld-service:v01
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health
+            initialDelaySeconds: 5
+          ports:
+            - containerPort: 8080
+          env:
+            - name: message
+              valueFrom:
+                configMapKeyRef:
+                  name: message-config
+                  key: message
+                  
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: message-config
+data:
+  message: Hello World from DO!                  

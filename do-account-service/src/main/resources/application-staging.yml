@@ -1,0 +1,12 @@
+server:
+  port: 8090
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,metrics,health
+
+customer:
+  api:
+    url: http://customer-service:8080

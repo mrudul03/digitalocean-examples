@@ -1,0 +1,130 @@
+
+https://blog.getambassador.io/ambassador-edge-stack-1-0-0-ea1-release-notes-4a50163384cf
+https://blog.getambassador.io/introducing-the-ambassador-edge-stack-1-0-with-automatic-https-and-the-edge-policy-console-47ed8e8c129a
+
+
+amb-cluster-nyc1
+doctl kubernetes cluster kubeconfig save amb-cluster-nyc1
+
+➜  K8S-SSL-Steps git:(master) ✗ doctl kubernetes cluster kubeconfig save amb-cluster-nyc1
+Notice: adding cluster credentials to kubeconfig file found in "/Users/Mrudul/.kube/config"
+Notice: setting current-context to do-nyc1-amb-cluster-nyc1
+
+➜  K8S-SSL-Steps git:(master) ✗ kubectl config current-context
+do-nyc1-amb-cluster-nyc1
+
+########### Install Ambassador Edge Stack
+https://blog.getambassador.io/
+https://www.getambassador.io/user-guide/getting-started/
+
+1. Deploy Ambassador Edge Stack
+kubectl apply -f https://www.getambassador.io/yaml/aes-crds.yaml && \
+kubectl wait --for condition=established --timeout=90s crd -lproduct=aes && \
+kubectl apply -f https://www.getambassador.io/yaml/aes.yaml && \
+kubectl -n ambassador wait --for condition=available --timeout=90s deploy -lproduct=aes
+---------
+customresourcedefinition.apiextensions.k8s.io/authservices.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/consulresolvers.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/hosts.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/kubernetesendpointresolvers.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/kubernetesserviceresolvers.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/logservices.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/mappings.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/modules.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/ratelimitservices.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/tcpmappings.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/tlscontexts.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/tracingservices.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/filterpolicies.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/filters.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/ratelimits.getambassador.io created
+customresourcedefinition.apiextensions.k8s.io/authservices.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/consulresolvers.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/filterpolicies.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/filters.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/hosts.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/kubernetesendpointresolvers.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/kubernetesserviceresolvers.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/logservices.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/mappings.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/modules.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/ratelimits.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/ratelimitservices.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/tcpmappings.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/tlscontexts.getambassador.io condition met
+customresourcedefinition.apiextensions.k8s.io/tracingservices.getambassador.io condition met
+namespace/ambassador created
+clusterrole.rbac.authorization.k8s.io/ambassador created
+serviceaccount/ambassador created
+clusterrolebinding.rbac.authorization.k8s.io/ambassador created
+service/ambassador-redis created
+deployment.apps/ambassador-redis created
+ratelimitservice.getambassador.io/ambassador-edge-stack-ratelimit created
+authservice.getambassador.io/ambassador-edge-stack-auth created
+secret/ambassador-edge-stack created
+mapping.getambassador.io/ambassador-devportal created
+mapping.getambassador.io/ambassador-devportal-api created
+service/ambassador created
+service/ambassador-admin created
+deployment.apps/ambassador created
+deployment.apps/ambassador condition met
+deployment.apps/ambassador-redis condition met
+---------------
+
+➜  K8S-SSL-Steps git:(master) ✗ kubectl get all -n ambassador
+NAME                                    READY   STATUS    RESTARTS   AGE
+pod/ambassador-8b657bfd-c7nt6           1/1     Running   0          82s
+pod/ambassador-redis-5fbd59f4fb-7lxv6   1/1     Running   0          88s
+
+NAME                       TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                      AGE
+service/ambassador         LoadBalancer   10.245.162.183   167.172.14.31   80:32395/TCP,443:32401/TCP   84s
+service/ambassador-admin   ClusterIP      10.245.123.64    <none>          8877/TCP                     83s
+service/ambassador-redis   ClusterIP      10.245.101.46    <none>          6379/TCP                     90s
+
+NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/ambassador         1/1     1            1           83s
+deployment.apps/ambassador-redis   1/1     1            1           89s
+
+NAME                                          DESIRED   CURRENT   READY   AGE
+replicaset.apps/ambassador-8b657bfd           1         1         1       83s
+replicaset.apps/ambassador-redis-5fbd59f4fb   1         1         1       89s
+
+--------------
+
+2. Determine the IP address of your cluster by running the following command: (LoadBalancer IP)
+167.172.14.31
+kubectl get -n ambassador service ambassador -o 'go-template={{range .status.loadBalancer.ingress}}{{print .ip "\n"}}{{end}}'
+Update your DNS so that your domain points to the IP address for your cluster.
+
+3. 
+Navigate to http://167.172.14.31
+
+4. Install edgectl
+curl -fLO https://metriton.datawire.io/downloads/darwin/edgectl
+chmod a+x edgectl
+mv edgectl /usr/local/bin
+
+sudo edgectl daemon
+
+5. Login in to edgectl policy
+
+edgectl login --namespace=ambassador cloudeira.com
+
+############### Create a Mapping
+
+kubectl apply -f do-amb-helloworld-service.yaml
+kubectl apply -f service.yaml
+
+kubectl apply -f helloworld-mapping.yaml
+
+curl -Lk https://cloudeira.com/api/helloservice/Urvi-123123
+
+
+echo 'c3VwZXJtYW46c3VwZXJwb3dlcg==' | base64 -D
+
+
+
+
+
+
+

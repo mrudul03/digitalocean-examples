@@ -1,0 +1,25 @@
+
+
+https://barclays.webex.com/join/ashish.vichare
+
+Step 1: Run IBM MQ broker
+docker run -it --rm -e LICENSE=accept -e MQ_QMGR_NAME=QMGR -p 9443:9443 -p 1414:1414 mqadvanced-server-dev:9.1.0.0-x86_64-ubuntu-16.04
+Access IBM MQ Console using https://127.0.0.1:9443/ibmmq/console/
+
+Step 2: Deploy the on-premises Active MQ broker
+docker run -p 61616:61616 -p 8161:8161 rmohr/activemq
+Access Active MQ Console http://localhost:8161
+create queue named ACT.QUEUE.1
+
+Step 3: Build and run IBM MQ Servive
+IbmMQService (REST Service) to publish message to IBM MQ Queue.
+
+mvn clean install
+java -jar target/message-router-0.0.1-SNAPSHOT.jar
+Step 4: Build and deploy Message Router
+Message Router to route messages from IBM MQ to Active MQ
+
+mvn clean install
+java -jar target/message-router-0.0.1-SNAPSHOT.jar
+Step 5: Send message to IBM MQ Queue
+POST a request to Ibmmq-Service

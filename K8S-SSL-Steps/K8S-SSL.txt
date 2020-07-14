@@ -1,0 +1,26 @@
+
+
+
+1. https://www.digitalocean.com/community/tutorials/how-to-point-to-digitalocean-nameservers-from-common-domain-registrars
+
+2. https://www.digitalocean.com/docs/networking/dns/how-to/manage-records/
+
+3. https://cert-manager.io/docs/configuration/acme/dns01/
+https://cert-manager.io/docs/configuration/acme/dns01/digitalocean/
+https://letsencrypt.org/docs/challenge-types/#dns-01-challenge  
+
+
+Must read 
+https://docs.cert-manager.io/en/release-0.11/reference/index.html
+https://docs.cert-manager.io/en/release-0.11/tutorials/acme/dns-validation.html
+
+
+
+https://www.eff.org/deeplinks/2018/02/technical-deep-dive-securing-automation-acme-dns-challenge-validation 
+
+https://www.digitalocean.com/community/tutorials/how-to-point-to-digitalocean-nameservers-from-common-domain-registrars  
+
+
+optional - https://blog.getambassador.io/using-jetstacks-kubernetes-cert-manager-to-automatically-renew-tls-certificates-in-the-ambassador-7db119ab34a4
+
+https://www.digitalocean.com/docs/networking/load-balancers/how-to/ssl-termination/#use-lets-encrypt

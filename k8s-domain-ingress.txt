@@ -1,0 +1,76 @@
+
+echo -n 'doadmin' | base64
+echo -n 'bdbhci6u8q31eo9s' | base64
+-----------------------
+
+kubectl apply -f deployment.yaml -n customer
+kubectl get deploy -n customer
+
+kubectl apply -f customer-service.yaml -n customer
+kubectl get svc -n customer
+
+kubectl delete svc customer-svc -n customer
+kubectl delete deployment customer-dep -n customer
+
+-----------------------
+
+kubectl apply -f deployment.yaml -n helloworld
+kubectl get deploy -n helloworld
+
+kubectl apply -f helloworld-service.yaml -n helloworld
+kubectl get svc -n helloworld
+
+kubectl delete svc helloworld-svc -n helloworld
+kubectl delete deployment helloworld-dep -n helloworld
+
+-----------------------
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.26.1/deploy/static/mandatory.yaml
+
+Mrudul@mruduls-mbp do-helloworld-service % kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.26.1/deploy/static/mandatory.yaml
+namespace/ingress-nginx created
+configmap/nginx-configuration created
+configmap/tcp-services created
+configmap/udp-services created
+serviceaccount/nginx-ingress-serviceaccount created
+clusterrole.rbac.authorization.k8s.io/nginx-ingress-clusterrole created
+role.rbac.authorization.k8s.io/nginx-ingress-role created
+rolebinding.rbac.authorization.k8s.io/nginx-ingress-role-nisa-binding created
+clusterrolebinding.rbac.authorization.k8s.io/nginx-ingress-clusterrole-nisa-binding created
+deployment.apps/nginx-ingress-controller created
+
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.26.1/deploy/static/provider/cloud-generic.yaml
+service/ingress-nginx created
+
+kubectl get pods --all-namespaces -l app.kubernetes.io/name=ingress-nginx
+kubectl get svc --namespace=ingress-nginx
+
+Confirm that the Ingress Controller Pods have started:
+kubectl get pods --all-namespaces -l app.kubernetes.io/name=ingress-nginx
+NAMESPACE       NAME                                        READY   STATUS    RESTARTS   AGE
+ingress-nginx   nginx-ingress-controller-7fb85bc8bb-cnkvh   1/1     Running   0          24h
+
+Confirm that the DigitalOcean Load Balancer was successfully created by fetching the Service details with kubectl:
+kubectl get svc --namespace=ingress-nginx
+
+kubectl apply -f helloworld-ingress.yaml
+kubectl apply -f customer-ingress.yaml
+
+curl http://helloworld.cloudeira.com/api/helloservice/mrudul123
+curl http://customer.cloudeira.com/api/customerservice/customers
+
+kubectl delete ingress helloworld-ingress -n helloworld
+kubectl delete ingress customer-ingress -n customer
+
+kubectl delete svc ingress-nginx -n ingress-nginx
+
+-----------------------------------
+
+username = doadmin
+password = aem83c238hf9qegp hide
+host = customer-db-do-user-6906991-0.db.ondigitalocean.com
+port = 25060
+database = defaultdb
+sslmode = REQUIRED
+
+mysql://doadmin:aem83c238hf9qegp@customer-db-do-user-6906991-0.db.ondigitalocean.com:25060/defaultdb?ssl-mode=REQUIREDCopy

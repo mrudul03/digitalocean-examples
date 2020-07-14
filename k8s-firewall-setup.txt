@@ -1,0 +1,21 @@
+
+K8S Firewall
+
+Are there any k8s firewall best practices to be aware of?
+https://www.digitalocean.com/community/questions/are-there-any-k8s-firewall-best-practices-to-be-aware-of
+
+#######################
+https://stackoverflow.com/questions/56747050/is-ambassador-a-licensed-service-what-should-be-preferred-more-envoy-proxy-or
+
+Ambassador Is open source software just like Envoy.
+
+It's licensed under Apache-2.0.
+It just so happens that this is the same license used by Envoy.
+
+Ambassador does have a PRO version you can pay for to get a few more features.
+
+Ambassador is a specialized control plane for Envoy Proxy.
+
+So yes, they can do a lot of the same things, but with ambassador on a higher level of abstraction you'll get more value out of it more quickly IMHO. Even if you don't pay for their PRO version.
+
+Envoy is like a lego brick, ambassador is like a spaceship made of several bricks. Envoy can be deployed on servers. Ambasador is built to be K8S native, and really easy to deploy. I don't know your use case specifically, but if I wanted an API gateway running in Kubernetes I would look at Ambassador over Envoy.
